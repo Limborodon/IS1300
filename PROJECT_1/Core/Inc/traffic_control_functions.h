@@ -9,7 +9,7 @@
 #ifndef INC_TRAFFIC_CONTROL_FUNCTIONS_H_
 #define INC_TRAFFIC_CONTROL_FUNCTIONS_H_
 
-
+void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1);
 
 #endif /* INC_TRAFFIC_CONTROL_FUNCTIONS_H_ */
 

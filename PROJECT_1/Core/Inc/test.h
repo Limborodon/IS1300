@@ -10,6 +10,7 @@
 #ifndef INC_TEST_H_
 #define INC_TEST_H_
 
-void Test_program();
+void test_leds();
+void test_program();
 
 #endif /* INC_TEST_H_ */
