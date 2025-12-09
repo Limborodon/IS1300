@@ -6,7 +6,12 @@
 @date 8-December-2025
 ******************************************************************************
 */
+#include<main.h>
 
-void traffic_control(){
+void task1(){
 
 }
+void traffic_control(){
+	task1();
+}
+
