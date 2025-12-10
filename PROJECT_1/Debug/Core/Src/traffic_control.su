@@ -1,2 +1,4 @@
-../Core/Src/traffic_control.c:23:6:task1	8	static
-../Core/Src/traffic_control.c:51:6:traffic_control	8	static
+../Core/Src/traffic_control.c:58:16:Upper_Pedestrian_Button_Pressed	4	static
+../Core/Src/traffic_control.c:63:13:Output_Lights	16	static
+../Core/Src/traffic_control.c:69:6:task1	16	static
+../Core/Src/traffic_control.c:160:6:traffic_control	8	static

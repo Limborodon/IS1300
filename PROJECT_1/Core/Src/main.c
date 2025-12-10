@@ -32,7 +32,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define RUN_TEST_PROGRAM
+//#define RUN_TEST_PROGRAM
+
 
 /* USER CODE END PD */
 
@@ -92,6 +93,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+//#undefine RUN_TEST_PROGRAM
 #ifdef RUN_TEST_PROGRAM
 	test_program();
 #else
