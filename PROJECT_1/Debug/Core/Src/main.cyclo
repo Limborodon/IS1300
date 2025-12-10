@@ -2,4 +2,4 @@
 ../Core/Src/main.c:117:6:SystemClock_Config	4
 ../Core/Src/main.c:167:13:MX_USART2_UART_Init	2
 ../Core/Src/main.c:202:13:MX_GPIO_Init	1
-../Core/Src/main.c:267:6:Error_Handler	1
+../Core/Src/main.c:279:6:Error_Handler	1

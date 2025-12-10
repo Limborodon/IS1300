@@ -1,2 +1,3 @@
 ../Core/Src/test.c:19:6:test_leds	4
-../Core/Src/test.c:47:6:test_program	1
+../Core/Src/test.c:47:6:test_button_debounce	1
+../Core/Src/test.c:52:6:test_program	1

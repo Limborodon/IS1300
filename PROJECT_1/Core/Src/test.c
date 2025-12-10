@@ -18,7 +18,7 @@
 */
 void test_leds()
 {
-	//U3: skip Q6, Q7
+	//U3: skip Q6, Q7 10000001
 	//Q5:TL4_Green Q4:TL4_Yellow,  Q3: TL4_Red Q2:TL3_Green Q1:TL3_Yellow Q0: TL3_Red
 	for(int i = 5; i >= 0; i--){
 		uint8_t byte_U3 = 1 << i;
@@ -44,9 +44,13 @@ void test_leds()
 
 }
 
-void test_program(){
-	test_leds();
+void test_button_debounce(){
 
+}
+
+
+void test_program(){
+	test_button_debounce();
 }
 
 

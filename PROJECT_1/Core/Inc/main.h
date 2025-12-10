@@ -75,12 +75,16 @@ void Error_Handler(void);
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define PL1_Switch_Pin GPIO_PIN_15
+#define PL1_Switch_GPIO_Port GPIOA
 #define SHCP_Pin GPIO_PIN_10
 #define SHCP_GPIO_Port GPIOC
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 #define DS_Pin GPIO_PIN_5
 #define DS_GPIO_Port GPIOB
+#define PL2_Switch_Pin GPIO_PIN_7
+#define PL2_Switch_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
