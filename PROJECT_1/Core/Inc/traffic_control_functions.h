@@ -9,6 +9,10 @@
 #ifndef INC_TRAFFIC_CONTROL_FUNCTIONS_H_
 #define INC_TRAFFIC_CONTROL_FUNCTIONS_H_
 
+
+#define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
+#define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
+
 extern uint8_t PL1_Debounced_State;
 extern uint8_t PL2_Debounced_State;
 

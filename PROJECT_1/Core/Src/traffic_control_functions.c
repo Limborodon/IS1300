@@ -14,7 +14,7 @@
 @date 8-December-2025
 ******************************************************************************
 */
-#define DEBOUNCE_DELAY (50)
+#define DEBOUNCE_DELAY (50) // 50 ms
 #define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
 #define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
 

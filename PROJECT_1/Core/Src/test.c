@@ -45,12 +45,27 @@ void test_leds()
 }
 
 void test_button_debounce(){
+	while(1){
+	Debounce_Button_Inputs();
+	if(PL1_Debounced_State == BUTTON_PRESSED){
+		Shift_Out_24(0, 0, 1 << 5); // PL2_Blue
+		HAL_Delay(5000);
+		Shift_Out_24(0,0,0);
+
+	}
+	if(PL2_Debounced_State == BUTTON_PRESSED){
+		Shift_Out_24(0, 1 << 5, 0); // PL2_Blue
+		HAL_Delay(5000);
+		Shift_Out_24(0,0,0); // turn off
+	}
+	}
 
 }
 
 
 void test_program(){
 	test_button_debounce();
+
 }
 
 
