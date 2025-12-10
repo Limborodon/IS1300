@@ -51,6 +51,7 @@ void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
     HAL_GPIO_WritePin(STCP_GPIO_Port, STCP_Pin, GPIO_PIN_SET);
 }
 
+//tests pedestrian button inputs by turning on their respective pedestrian blue light for 5 seconds.
 void Debounce_Button_Inputs() {
     uint32_t current_time = HAL_GetTick();
     uint8_t PL1_reading = HAL_GPIO_ReadPin(PL1_Switch_GPIO_Port, PL1_Switch_Pin);

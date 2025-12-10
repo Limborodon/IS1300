@@ -45,19 +45,30 @@ void test_leds()
 }
 
 void test_button_debounce(){
+	uint32_t lit_time = 5000; // 5000 ms
+	uint32_t PL1_last_change_time = 0;
+	uint32_t PL2_last_change_time = 0;
+	uint8_t byte_U2 = 0;
+	uint8_t byte_U1 = 0;
 	while(1){
 	Debounce_Button_Inputs();
-	if(PL1_Debounced_State == BUTTON_PRESSED){
-		Shift_Out_24(0, 0, 1 << 5); // PL2_Blue
-		HAL_Delay(5000);
-		Shift_Out_24(0,0,0);
+	uint32_t current_time = HAL_GetTick();
 
+	if(PL1_Debounced_State == BUTTON_PRESSED){
+		byte_U1 = 1 << 5 ; // PL1_Blue
+		PL1_last_change_time = current_time;
 	}
+
 	if(PL2_Debounced_State == BUTTON_PRESSED){
-		Shift_Out_24(0, 1 << 5, 0); // PL2_Blue
-		HAL_Delay(5000);
-		Shift_Out_24(0,0,0); // turn off
+			byte_U2 = 1 << 5 ; // PL1_Blue
+			PL2_last_change_time = current_time;
 	}
+
+	if(current_time - PL1_last_change_time >= lit_time) byte_U1 = 0;
+	if(current_time - PL2_last_change_time >= lit_time) byte_U2 = 0;
+
+	Shift_Out_24(0, byte_U2, byte_U1); // PL2_Blue
+
 	}
 
 }
