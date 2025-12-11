@@ -14,7 +14,7 @@
 @date 8-December-2025
 ******************************************************************************
 */
-#define DEBOUNCE_DELAY (50) // 50 ms
+#define DEBOUNCE_DELAY (10) // ms
 #define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
 #define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
 
@@ -51,7 +51,8 @@ void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
     HAL_GPIO_WritePin(STCP_GPIO_Port, STCP_Pin, GPIO_PIN_SET);
 }
 
-//tests pedestrian button inputs by turning on their respective pedestrian blue light for 5 seconds.
+//Debounces Button inputs with a 10ms debounce delay. Not 100% necessary because we only care about the first button press.
+// Although it is a more robust and scalable solution with little impact, with 10ms debounce delay. The solution is good for rejecting electrical noise in a larger system.
 void Debounce_Button_Inputs() {
     uint32_t current_time = HAL_GetTick();
     uint8_t PL1_reading = HAL_GPIO_ReadPin(PL1_Switch_GPIO_Port, PL1_Switch_Pin);

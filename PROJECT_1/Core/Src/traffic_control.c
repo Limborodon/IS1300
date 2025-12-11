@@ -59,6 +59,10 @@ static uint8_t Upper_Pedestrian_Button_Pressed(void) {
     return (PL2_Debounced_State == GPIO_PIN_RESET);
 }
 
+static uint8_t Lower_Pedestrian_Button_Pressed(void) {
+    return (PL1_Debounced_State == GPIO_PIN_RESET);
+}
+
 //helper
 static void Output_Lights(uint8_t u3, uint8_t u2, uint8_t u1) {
     Shift_Out_24(u3, u2, u1);
@@ -163,7 +167,6 @@ void task1(void)
 	    }
 }
 void traffic_control(){
-	Shift_Out_24(0,0,0);//resets lights just in case
 	task1();
 }
 
