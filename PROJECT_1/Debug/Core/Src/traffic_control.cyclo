@@ -1,4 +1,4 @@
 ../Core/Src/traffic_control.c:58:16:Upper_Pedestrian_Button_Pressed	1
 ../Core/Src/traffic_control.c:63:13:Output_Lights	1
-../Core/Src/traffic_control.c:69:6:task1	14
-../Core/Src/traffic_control.c:160:6:traffic_control	1
+../Core/Src/traffic_control.c:69:6:task1	16
+../Core/Src/traffic_control.c:165:6:traffic_control	1

@@ -113,8 +113,13 @@ void task1(void)
 	            break;
 
 	        case STATE_CAR_ORANGE_T1:
+	        	//Should blink until ped light green, thus also when orange from green
+	        	if (now - lastBlinkTime >= toggleFreq) {
+	        		indicatorState ^= 1;
+	        		lastBlinkTime = now;
+	        	}
 	            byte_U1 = 0;
-	            byte_U2 = TL2_YELLOW | PL2_RED;
+	            byte_U2 = TL2_YELLOW | PL2_RED | (indicatorState ? PL2_BLUE : 0);
 	            byte_U3 = TL4_YELLOW;
 
 	            if (now - stateStartTime >= orangeDelay) {
