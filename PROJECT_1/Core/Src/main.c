@@ -27,7 +27,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+//#define RUN_TEST_PROGRAM
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/

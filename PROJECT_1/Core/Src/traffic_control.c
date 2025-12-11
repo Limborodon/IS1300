@@ -10,6 +10,8 @@
 
 #include "traffic_control_functions.h"
 
+#define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
+#define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
 //U1
 #define TL1_RED        (1 << 0)
 #define TL1_YELLOW     (1 << 1)
@@ -54,21 +56,6 @@ uint32_t toggleFreq      = 300;
 uint32_t pedestrianDelay = 4000;
 uint32_t walkingDelay    = 5000;
 uint32_t orangeDelay     = 2000;
-
-static uint8_t Upper_Pedestrian_Button_Pressed(void) {
-    return (PL2_Debounced_State == GPIO_PIN_RESET);
-}
-
-static uint8_t Lower_Pedestrian_Button_Pressed(void) {
-    return (PL1_Debounced_State == GPIO_PIN_RESET);
-}
-
-//helper
-static void Output_Lights(uint8_t u3, uint8_t u2, uint8_t u1) {
-    Shift_Out_24(u3, u2, u1);
-}
-
-
 
 void task1(void)
 {
@@ -165,6 +152,11 @@ void task1(void)
 	        // Output
 	        Output_Lights(byte_U3, byte_U2, byte_U1);
 	    }
+}
+
+void task2(){
+
+
 }
 void traffic_control(){
 	task1();

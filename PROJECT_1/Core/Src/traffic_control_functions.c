@@ -14,10 +14,6 @@
 @date 8-December-2025
 ******************************************************************************
 */
-#define DEBOUNCE_DELAY (10) // ms
-#define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
-#define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
-
 
 // For PED button
 uint8_t PL1_Debounced_State = BUTTON_RELEASED;
@@ -26,8 +22,8 @@ uint8_t PL2_Debounced_State = BUTTON_RELEASED;
 uint32_t PL1_Last_Change_Time = 0;
 uint32_t PL2_Last_Change_Time = 0;
 
-
-void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
+//function for outputing lights uses the shift register to shift in bits with SHCP and then shows with the Latch(STCP) lights up the LEDs.
+void Output_Lights(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
     // Combine the three bytes
     uint32_t data = ((uint32_t)byte_U3 << 16) | ((uint32_t)byte_U2 << 8) | byte_U1;
 
@@ -51,8 +47,8 @@ void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
     HAL_GPIO_WritePin(STCP_GPIO_Port, STCP_Pin, GPIO_PIN_SET);
 }
 
-//Debounces Button inputs with a 10ms debounce delay. Not 100% necessary because we only care about the first button press.
-// Although it is a more robust and scalable solution with little impact, with 10ms debounce delay. The solution is good for rejecting electrical noise in a larger system.
+// Debounces Button inputs with a 5ms debounce delay. Not 100% necessary because we only care about the first button press.
+// The solution is good for rejecting electrical noise in a larger syste and does not impact it much.
 void Debounce_Button_Inputs() {
     uint32_t current_time = HAL_GetTick();
     uint8_t PL1_reading = HAL_GPIO_ReadPin(PL1_Switch_GPIO_Port, PL1_Switch_Pin);
@@ -73,6 +69,17 @@ void Debounce_Button_Inputs() {
             PL2_Last_Change_Time = current_time;
         }
 }
+
+uint8_t Upper_Pedestrian_Button_Pressed(void) {
+    return (PL2_Debounced_State == BUTTON_PRESSED);
+}
+
+uint8_t Lower_Pedestrian_Button_Pressed(void) {
+    return (PL1_Debounced_State == BUTTON_PRESSED);
+}
+
+
+
 
 
 
