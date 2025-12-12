@@ -1,0 +1,3 @@
+../Core/Src/traffic_control.c:60:6:task1	16	static
+../Core/Src/traffic_control.c:157:6:task2	0	static
+../Core/Src/traffic_control.c:161:6:traffic_control	8	static

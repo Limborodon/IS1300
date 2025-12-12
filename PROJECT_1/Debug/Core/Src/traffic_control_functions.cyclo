@@ -1,4 +1,4 @@
-../Core/Src/traffic_control_functions.c:54:6:Output_Lights	3
-../Core/Src/traffic_control_functions.c:80:6:Debounce_Button_Inputs	5
-../Core/Src/traffic_control_functions.c:101:9:Upper_Pedestrian_Button_Pressed	1
-../Core/Src/traffic_control_functions.c:105:9:Lower_Pedestrian_Button_Pressed	1
+../Core/Src/traffic_control_functions.c:29:6:Output_Lights	3
+../Core/Src/traffic_control_functions.c:55:6:Debounce_Button_Inputs	5
+../Core/Src/traffic_control_functions.c:76:9:Upper_Pedestrian_Button_Pressed	1
+../Core/Src/traffic_control_functions.c:80:9:Lower_Pedestrian_Button_Pressed	1

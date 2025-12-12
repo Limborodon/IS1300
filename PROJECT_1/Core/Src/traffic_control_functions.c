@@ -7,6 +7,7 @@
 ******************************************************************************
 */
 #include "main.h"
+#include "traffic_control_functions.h"
 /**
 ******************************************************************************
 @brief Shift_Out_24, Shifts out 24 bits to the shift registers for pedestrian and traffic lights.
@@ -15,6 +16,8 @@
 ******************************************************************************
 */
 
+
+#define DEBOUNCE_DELAY (5) // ms
 // For PED button
 uint8_t PL1_Debounced_State = BUTTON_RELEASED;
 uint8_t PL2_Debounced_State = BUTTON_RELEASED;
