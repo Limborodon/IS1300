@@ -32,8 +32,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define RUN_TEST_PROGRAM
-//#undef RUN_TEST_PROGRAM
+//#define RUN_TEST_PROGRAM
+#undef RUN_TEST_PROGRAM
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -238,11 +238,23 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : TL1_Car_Pin */
+  GPIO_InitStruct.Pin = TL1_Car_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(TL1_Car_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : STCP_Pin DS_Pin */
   GPIO_InitStruct.Pin = STCP_Pin|DS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : TL2_Car_Pin TL3_Car_Pin */
+  GPIO_InitStruct.Pin = TL2_Car_Pin|TL3_Car_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ENABLE_Pin SHCP_Pin */
@@ -251,6 +263,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : TL4_Car_Pin */
+  GPIO_InitStruct.Pin = TL4_Car_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(TL4_Car_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PL1_Switch_Pin */
   GPIO_InitStruct.Pin = PL1_Switch_Pin;

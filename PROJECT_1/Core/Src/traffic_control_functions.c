@@ -42,12 +42,22 @@
 
 
 
-// Global PED button state variables
-uint8_t PL1_Debounced_State = BUTTON_RELEASED;
-uint8_t PL2_Debounced_State = BUTTON_RELEASED;
+// Global PED button/switch state variables
+GPIO_PinState PL1_Debounced_State = BUTTON_RELEASED;
+GPIO_PinState PL2_Debounced_State = BUTTON_RELEASED;
+
+GPIO_PinState TL1_Switch_Debounced_State = NO_CAR_PRESET;
+GPIO_PinState TL2_Switch_Debounced_State = NO_CAR_PRESET;
+GPIO_PinState TL3_Switch_Debounced_State = NO_CAR_PRESET;
+GPIO_PinState TL4_Switch_Debounced_State = NO_CAR_PRESET;
 
 uint32_t PL1_Last_Change_Time = 0;
 uint32_t PL2_Last_Change_Time = 0;
+
+uint32_t TL1_Last_Change_Time = 0;
+uint32_t TL2_Last_Change_Time = 0;
+uint32_t TL3_Last_Change_Time = 0;
+uint32_t TL4_Last_Change_Time = 0;
 
 // Global state variables for the lights/shift register
 // Volatile in case we use want to use RTOS
@@ -94,8 +104,8 @@ void Output_Lights(){
 
 void Debounce_Button_Inputs() {
     uint32_t current_time = HAL_GetTick();
-    uint8_t PL1_reading = HAL_GPIO_ReadPin(PL1_Switch_GPIO_Port, PL1_Switch_Pin);
-    uint8_t PL2_reading = HAL_GPIO_ReadPin(PL2_Switch_GPIO_Port, PL2_Switch_Pin);
+    GPIO_PinState PL1_reading = HAL_GPIO_ReadPin(PL1_Switch_GPIO_Port, PL1_Switch_Pin);
+    GPIO_PinState PL2_reading = HAL_GPIO_ReadPin(PL2_Switch_GPIO_Port, PL2_Switch_Pin);
 
     if (PL1_reading != PL1_Debounced_State) {
         if (current_time - PL1_Last_Change_Time >= DEBOUNCE_DELAY) {
@@ -105,12 +115,50 @@ void Debounce_Button_Inputs() {
         PL1_Last_Change_Time = current_time;
     }
     if (PL2_reading != PL2_Debounced_State) {
-            if (current_time - PL2_Last_Change_Time >= DEBOUNCE_DELAY) {
-                PL2_Debounced_State = PL2_reading;
-            }
+    	if (current_time - PL2_Last_Change_Time >= DEBOUNCE_DELAY) {
+    		PL2_Debounced_State = PL2_reading;
+        }
         } else {
             PL2_Last_Change_Time = current_time;
         }
+}
+
+void Debounce_Switch_Inputs(){
+	uint32_t current_time = HAL_GetTick();
+	GPIO_PinState TL1_reading = HAL_GPIO_ReadPin(TL1_Car_GPIO_Port, TL1_Car_Pin);
+	GPIO_PinState TL2_reading = HAL_GPIO_ReadPin(TL2_Car_GPIO_Port, TL2_Car_Pin);
+	GPIO_PinState TL3_reading = HAL_GPIO_ReadPin(TL3_Car_GPIO_Port, TL3_Car_Pin);
+	GPIO_PinState TL4_reading = HAL_GPIO_ReadPin(TL4_Car_GPIO_Port, TL4_Car_Pin);
+
+	if (TL1_reading != TL1_Switch_Debounced_State) {
+		if (current_time - TL1_Last_Change_Time >= DEBOUNCE_DELAY) {
+			TL1_Switch_Debounced_State = TL1_reading;
+	    }
+	} else {
+		TL1_Last_Change_Time = current_time;
+	}
+	if (TL2_reading != TL2_Switch_Debounced_State) {
+			if (current_time - TL2_Last_Change_Time >= DEBOUNCE_DELAY) {
+				TL2_Switch_Debounced_State = TL2_reading;
+		    }
+		} else {
+			TL2_Last_Change_Time = current_time;
+	}
+	if (TL3_reading != TL3_Switch_Debounced_State) {
+			if (current_time - TL3_Last_Change_Time >= DEBOUNCE_DELAY) {
+				TL3_Switch_Debounced_State = TL3_reading;
+		    }
+		} else {
+			TL3_Last_Change_Time = current_time;
+	}
+	if (TL4_reading != TL4_Switch_Debounced_State) {
+			if (current_time - TL4_Last_Change_Time >= DEBOUNCE_DELAY) {
+				TL4_Switch_Debounced_State = TL4_reading;
+		    }
+		} else {
+			TL4_Last_Change_Time = current_time;
+	}
+
 }
 
 bool Upper_Pedestrian_Button_Pressed(void) {
@@ -119,6 +167,30 @@ bool Upper_Pedestrian_Button_Pressed(void) {
 
 bool Lower_Pedestrian_Button_Pressed(void) {
     return (PL1_Debounced_State == BUTTON_PRESSED);
+}
+
+bool Car_Present(uint8_t car_number){
+	switch(car_number){
+	case 1:
+		return (TL1_Switch_Debounced_State == CAR_PRESET);
+	case 2:
+		return (TL2_Switch_Debounced_State == CAR_PRESET);
+	case 3:
+		return (TL3_Switch_Debounced_State == CAR_PRESET);
+	case 4:
+		return (TL4_Switch_Debounced_State == CAR_PRESET);
+	default:
+		return false;
+	}
+
+}
+
+bool Vertical_Car_Sensor_Active(void) {
+    return (Car_Present(1) || Car_Present(3));
+}
+
+bool Horizontal_Car_Sensor_Active(void) {
+    return (Car_Present(2) || Car_Present(4));
 }
 
 void light_set(uint8_t led_id, uint8_t color_code) {
@@ -157,11 +229,11 @@ void light_set(uint8_t led_id, uint8_t color_code) {
 
     if (state_ptr == NULL) return; // Should not happen, but just in case it does.
 
-    // Set or clear light depending on color_code value.
+    // Set or clear light
     if (color_code == COLOR_ON) {
-        *state_ptr |= bitmask;  // Turn on the LED
+        *state_ptr |= bitmask;  // Turn on
     } else {
-        *state_ptr &= ~bitmask; // Turn off the LED
+        *state_ptr &= ~bitmask; // Turn off
     }
 }
 

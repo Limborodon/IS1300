@@ -46,6 +46,7 @@ void test_leds()
 }
 */
 // lights assigned to 1-18 and tested with HAL_Delay individually turning all of them on induvidually then off with 2 seconds per light switch.
+//Check with visual confirmation
 void test_lights(){
 	// turns all lights on 1 by 1 every 2 seconds
 	for(int i = 1; i <= 18; i++){
@@ -98,11 +99,25 @@ void test_buttons(){
 
 }
 
+//tests switches by turning on their respective traffic lights green light if switch state is high and turns off if switch state low.
+void test_switches(){
+	Debounce_Switch_Inputs();
+	while(1){
+		Debounce_Switch_Inputs();
+		if(Car_Present(1)) light_set(ID_TL1_GREEN, COLOR_ON); else light_set(ID_TL1_GREEN, COLOR_OFF);
+		if(Car_Present(2)) light_set(ID_TL2_GREEN, COLOR_ON); else light_set(ID_TL2_GREEN, COLOR_OFF);
+		if(Car_Present(3)) light_set(ID_TL3_GREEN, COLOR_ON); else light_set(ID_TL3_GREEN, COLOR_OFF);
+		if(Car_Present(4)) light_set(ID_TL4_GREEN, COLOR_ON); else light_set(ID_TL4_GREEN, COLOR_OFF);
+		Output_Lights();
+	}
+
+}
 
 void test_program(){
 	//test_lights();
 	//test_lights_reset();
-	test_buttons();
+	//test_buttons();
+	test_switches();
 
 }
 

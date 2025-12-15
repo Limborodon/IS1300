@@ -11,8 +11,12 @@
 
 #include<stdbool.h>
 
-#define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
-#define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
+#define BUTTON_PRESSED   GPIO_PIN_RESET
+#define BUTTON_RELEASED  GPIO_PIN_SET
+
+#define NO_CAR_PRESET    GPIO_PIN_RESET
+#define CAR_PRESET       GPIO_PIN_SET
+
 
 // LED IDs
 //U1
@@ -43,8 +47,8 @@
 #define COLOR_ON  1
 #define COLOR_OFF 0
 
-extern uint8_t PL1_Debounced_State;
-extern uint8_t PL2_Debounced_State;
+extern GPIO_PinState PL1_Debounced_State;
+extern GPIO_PinState PL2_Debounced_State;
 
 
 
@@ -52,9 +56,13 @@ void Output_Lights();
 void Debounce_Button_Inputs();
 void light_set(uint8_t led_id, uint8_t color_code);
 void lights_reset();
-
+bool Car_Present(uint8_t car_number);
+bool Vertical_Car_Sensor_Active();
+bool Horizontal_Car_Sensor_Active();
 bool Upper_Pedestrian_Button_Pressed();
 bool Lower_Pedestrian_Button_Pressed();
+
+
 
 #endif /* INC_TRAFFIC_CONTROL_FUNCTIONS_H_ */
 
