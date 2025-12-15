@@ -10,32 +10,6 @@
 
 #include "traffic_control_functions.h"
 
-#define BUTTON_PRESSED   GPIO_PIN_RESET // Button pressed
-#define BUTTON_RELEASED  GPIO_PIN_SET   // Button released
-//U1
-#define TL1_RED        (1 << 0)
-#define TL1_YELLOW     (1 << 1)
-#define TL1_GREEN      (1 << 2)
-#define PL1_RED        (1 << 3)
-#define PL1_GREEN      (1 << 4)
-#define PL1_BLUE       (1 << 5)
-
-// U2
-#define TL2_RED        (1 << 0)
-#define TL2_YELLOW     (1 << 1)
-#define TL2_GREEN      (1 << 2)
-#define PL2_RED        (1 << 3)
-#define PL2_GREEN      (1 << 4)
-#define PL2_BLUE       (1 << 5)
-
-// U3
-#define TL3_RED        (1 << 0)
-#define TL3_YELLOW     (1 << 1)
-#define TL3_GREEN      (1 << 2)
-
-#define TL4_RED        (1 << 3)
-#define TL4_YELLOW     (1 << 4)
-#define TL4_GREEN      (1 << 5)
 
 typedef enum {
     STATE_IDLE_T1,
@@ -52,6 +26,8 @@ uint32_t stateStartTime = 0;
 uint32_t lastBlinkTime  = 0;
 uint8_t indicatorState  = 0;
 
+
+// Timing variables
 uint32_t toggleFreq      = 300;
 uint32_t pedestrianDelay = 4000;
 uint32_t walkingDelay    = 5000;
@@ -64,17 +40,15 @@ void task1(void)
 	        uint32_t now = HAL_GetTick();
 
 	        // Default
-	        uint8_t byte_U1 = 0; //TL1 & PL1
-	        uint8_t byte_U2 = 0; //TL2 & PL2
-	        uint8_t byte_U3 = 0; //TL3 & TL4
+	        lights_reset();
 	        Debounce_Button_Inputs();
 
 	        switch (current_state)
 	        {
 	        case STATE_IDLE_T1:
-	            byte_U1 = 0;
-	            byte_U2 = PL2_RED | TL2_GREEN;
-	            byte_U3 = TL4_GREEN;
+	            light_set(ID_PL2_RED, COLOR_ON);
+	            light_set(ID_TL2_GREEN, COLOR_ON);
+	            light_set(ID_TL4_GREEN, COLOR_ON);
 
 	            if (Upper_Pedestrian_Button_Pressed()) {
 	                stateStartTime = now;
@@ -92,9 +66,11 @@ void task1(void)
 	                lastBlinkTime = now;
 	            }
 
-	            byte_U1 = 0;
-	            byte_U2 = TL2_GREEN | PL2_RED | (indicatorState ? PL2_BLUE : 0);
-	            byte_U3 = TL4_GREEN;
+	            light_set(ID_TL2_GREEN, COLOR_ON);
+	            light_set(ID_PL2_RED, COLOR_ON);
+	            light_set(ID_TL4_GREEN, COLOR_ON);
+
+	            if(indicatorState) light_set(ID_PL2_BLUE, COLOR_ON);
 
 	            // After pedestrianDelay STATE car orange
 	            if (now - stateStartTime >= pedestrianDelay) {
@@ -109,9 +85,13 @@ void task1(void)
 	        		indicatorState ^= 1;
 	        		lastBlinkTime = now;
 	        	}
-	            byte_U1 = 0;
-	            byte_U2 = TL2_YELLOW | PL2_RED | (indicatorState ? PL2_BLUE : 0);
-	            byte_U3 = TL4_YELLOW;
+	            light_set(ID_TL2_YELLOW, COLOR_ON);
+	            light_set(ID_PL2_RED, COLOR_ON);
+	            light_set(ID_TL4_YELLOW, COLOR_ON);
+
+	            if (indicatorState) {
+	            	light_set(ID_PL2_BLUE, COLOR_ON);
+	            }
 
 	            if (now - stateStartTime >= orangeDelay) {
 	                stateStartTime = now;
@@ -120,9 +100,9 @@ void task1(void)
 	            break;
 
 	        case STATE_PED_GREEN_T1:
-	            byte_U1 = 0;
-	            byte_U2 = TL2_RED | PL2_GREEN;
-	            byte_U3 = TL4_RED;
+	            light_set(ID_TL2_RED, COLOR_ON);
+	            light_set(ID_PL2_GREEN, COLOR_ON);
+	            light_set(ID_TL4_RED, COLOR_ON);
 
 	            if (now - stateStartTime >= walkingDelay) {
 	                current_state = STATE_PED_GREEN_END_T1;
@@ -130,18 +110,18 @@ void task1(void)
 	            break;
 
 	        case STATE_PED_GREEN_END_T1:
-	            byte_U1 = 0;
-	            byte_U2 = TL2_RED | PL2_RED;
-	            byte_U3 = TL4_RED;
+	            light_set(ID_TL2_RED, COLOR_ON);
+	            light_set(ID_PL2_RED, COLOR_ON);
+	            light_set(ID_TL4_RED, COLOR_ON);
 
 	            stateStartTime = now;
 	            current_state = STATE_RETURN_ORANGE_T1;
 	            break;
 
 	        case STATE_RETURN_ORANGE_T1:
-	            byte_U1 = 0;
-	            byte_U2 = TL2_YELLOW | PL2_RED;
-	            byte_U3 = TL4_YELLOW;
+	            light_set(ID_TL2_YELLOW, COLOR_ON);
+	            light_set(ID_PL2_RED, COLOR_ON);
+	            light_set(ID_TL4_YELLOW, COLOR_ON);
 
 	            if (now - stateStartTime >= orangeDelay) {
 	                current_state = STATE_IDLE_T1;
@@ -149,8 +129,7 @@ void task1(void)
 	            break;
 	        }
 
-	        // Output
-	        Output_Lights(byte_U3, byte_U2, byte_U1);
+	        Output_Lights();
 	    }
 }
 

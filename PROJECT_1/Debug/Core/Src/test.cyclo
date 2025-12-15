@@ -1,3 +1,4 @@
-../Core/Src/test.c:19:6:test_leds	4
-../Core/Src/test.c:47:6:test_button_debounce	5
-../Core/Src/test.c:77:6:test_program	1
+../Core/Src/test.c:49:6:test_lights	3
+../Core/Src/test.c:64:6:test_lights_reset	2
+../Core/Src/test.c:75:6:test_buttons	5
+../Core/Src/test.c:102:6:test_program	1

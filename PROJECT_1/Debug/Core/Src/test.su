@@ -1,3 +1,4 @@
-../Core/Src/test.c:19:6:test_leds	24	static
-../Core/Src/test.c:47:6:test_button_debounce	32	static
-../Core/Src/test.c:77:6:test_program	8	static
+../Core/Src/test.c:49:6:test_lights	16	static
+../Core/Src/test.c:64:6:test_lights_reset	16	static
+../Core/Src/test.c:75:6:test_buttons	24	static
+../Core/Src/test.c:102:6:test_program	8	static
