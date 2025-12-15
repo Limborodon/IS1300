@@ -578,6 +578,8 @@ Discarded input sections
  .bss           0x00000000        0x0 ./Core/Src/test.o
  .rodata.CHANNEL_OFFSET_TAB
                 0x00000000        0x7 ./Core/Src/test.o
+ .text.test_shift_register
+                0x00000000       0xa0 ./Core/Src/test.o
  .text.test_lights
                 0x00000000       0x64 ./Core/Src/test.o
  .text.test_lights_reset
@@ -587,13 +589,13 @@ Discarded input sections
  .text.test_switches
                 0x00000000       0x8a ./Core/Src/test.o
  .text.test_program
-                0x00000000        0xc ./Core/Src/test.o
- .debug_info    0x00000000      0x27d ./Core/Src/test.o
- .debug_abbrev  0x00000000      0x174 ./Core/Src/test.o
+                0x00000000        0xe ./Core/Src/test.o
+ .debug_info    0x00000000      0x35c ./Core/Src/test.o
+ .debug_abbrev  0x00000000      0x175 ./Core/Src/test.o
  .debug_aranges
-                0x00000000       0x40 ./Core/Src/test.o
+                0x00000000       0x48 ./Core/Src/test.o
  .debug_rnglists
-                0x00000000       0x2c ./Core/Src/test.o
+                0x00000000       0x33 ./Core/Src/test.o
  .debug_macro   0x00000000      0x1e2 ./Core/Src/test.o
  .debug_macro   0x00000000      0xad8 ./Core/Src/test.o
  .debug_macro   0x00000000      0x1a1 ./Core/Src/test.o
@@ -633,10 +635,10 @@ Discarded input sections
  .debug_macro   0x00000000       0xdc ./Core/Src/test.o
  .debug_macro   0x00000000       0x22 ./Core/Src/test.o
  .debug_macro   0x00000000       0x94 ./Core/Src/test.o
- .debug_line    0x00000000      0x89f ./Core/Src/test.o
- .debug_str     0x00000000    0xe2d6a ./Core/Src/test.o
+ .debug_line    0x00000000      0x90a ./Core/Src/test.o
+ .debug_str     0x00000000    0xe2da3 ./Core/Src/test.o
  .comment       0x00000000       0x44 ./Core/Src/test.o
- .debug_frame   0x00000000       0xb0 ./Core/Src/test.o
+ .debug_frame   0x00000000       0xd8 ./Core/Src/test.o
  .ARM.attributes
                 0x00000000       0x34 ./Core/Src/test.o
  .group         0x00000000        0xc ./Core/Src/traffic_control.o

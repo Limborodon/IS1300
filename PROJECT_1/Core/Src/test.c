@@ -16,14 +16,14 @@
 @date 9-December-2025
 ******************************************************************************
 */
-/*
-void test_leds()
+
+void test_shift_register()
 {
 	//U3: skip Q6, Q7 10000001
 	//Q5:TL4_Green Q4:TL4_Yellow,  Q3: TL4_Red Q2:TL3_Green Q1:TL3_Yellow Q0: TL3_Red
 	for(int i = 5; i >= 0; i--){
 		uint8_t byte_U3 = 1 << i;
-		Output_Lights(byte_U3,0,0);
+		Shift_Out_24(byte_U3,0,0);
 		HAL_Delay(5000); // 5 seconds between lights
 	}
 	//U2: skip Q6, Q7
@@ -31,20 +31,20 @@ void test_leds()
 
 	for(int i = 5; i >= 0; i--){
 		uint8_t byte_U2 = 1 << i;
-		Output_Lights(0,byte_U2,0);
+		Shift_Out_24(0,byte_U2,0);
 		HAL_Delay(5000);
 	}
 	//U1: skip Q6, Q7
 	//Q5: PL1_Blue Q4: PL1_green Q3: PL1_Red Q2: TL1_Green Q1:TL1_Yellow Q0: TL1_Red
 	for(int i = 5; i >= 0; i--){
 		uint8_t byte_U1 = 1 << i;
-		Output_Lights(0,0,byte_U1);
+		Shift_Out_24(0,0,byte_U1);
 		HAL_Delay(5000);
 	}
 
 
 }
-*/
+
 // lights assigned to 1-18 and tested with HAL_Delay individually turning all of them on induvidually then off with 2 seconds per light switch.
 //Check with visual confirmation
 void test_lights(){
@@ -114,10 +114,11 @@ void test_switches(){
 }
 
 void test_program(){
+	//test_shift_register();
 	//test_lights();
 	//test_lights_reset();
 	//test_buttons();
-	test_switches();
+	//test_switches();
 
 }
 
