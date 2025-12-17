@@ -13,11 +13,8 @@
 // State machine for Task 1
 typedef enum {
     STATE_IDLE_T1,
-    STATE_BLINK_WAIT_T1,
-    STATE_CAR_ORANGE_T1,
-    STATE_PED_GREEN_T1,
-    STATE_PED_GREEN_END_T1,
-    STATE_RETURN_ORANGE_T1
+    STATE_WAITING_T1,
+    STATE_WALKING_T1
 } TrafficState_t_T1;
 
 TrafficState_t_T1 current_state = STATE_IDLE_T1;
@@ -26,10 +23,11 @@ TrafficState_t_T1 current_state = STATE_IDLE_T1;
 typedef enum {
     STATE_VERTICAL_GREEN_T2,
     STATE_VERTICAL_ORANGE_T2,
-    STATE_HORIZONTAL_RED_YELLOW_T2,
     STATE_HORIZONTAL_GREEN_T2,
     STATE_HORIZONTAL_ORANGE_T2,
-    STATE_VERTICAL_RED_YELLOW_T2
+	STATE_VERTICAL_ORANGE_PREPARE_T2,
+	STATE_HORIZONTAL_ORANGE_FINISH_T2
+
 } TrafficState_t_T2;
 
 TrafficState_t_T2 current_state_T2 = STATE_VERTICAL_GREEN_T2;
@@ -50,254 +48,161 @@ uint32_t orangeDelay     = 2000;
 uint32_t greenDelay      = 5000;
 uint32_t redDelayMax     = 6000;
 
-void task1(void)
-{
-	while (1)
-	    {
-	        uint32_t now = HAL_GetTick();
+void task1_logic(uint32_t now) {
+    switch (current_state) {
+        case STATE_IDLE_T1:
+            light_set(ID_PL2_RED, COLOR_ON);
+            if (Upper_Pedestrian_Button_Pressed()) {
+                stateStartTime = now;
+                lastBlinkTime = now;
+                indicatorState = 0;
+                current_state = STATE_WAITING_T1;
+            }
+            break;
 
-	        // Default
-	        lights_reset();
-	        Debounce_Button_Inputs();
+        case STATE_WAITING_T1:
+            if (now - lastBlinkTime >= toggleFreq) {
+                indicatorState ^= 1;
+                lastBlinkTime = now;
+            }
+            light_set(ID_PL2_RED, COLOR_ON);
+            if(indicatorState) light_set(ID_PL2_BLUE, COLOR_ON);
 
-	        switch (current_state)
-	        {
-	        case STATE_IDLE_T1:
-	            light_set(ID_PL2_RED, COLOR_ON);
-	            light_set(ID_TL2_GREEN, COLOR_ON);
-	            light_set(ID_TL4_GREEN, COLOR_ON);
+            // Saftey Check: Vertical cars must be red before walking
+            bool cars_are_stopped = (current_state_T2 == STATE_HORIZONTAL_GREEN_T2 ||
+                                     current_state_T2 == STATE_HORIZONTAL_ORANGE_T2);
 
-	            if (Upper_Pedestrian_Button_Pressed()) {
-	                stateStartTime = now;
-	                lastBlinkTime = now;
-	                indicatorState = 0;
-	                current_state = STATE_BLINK_WAIT_T1;
-	            }
-	            break;
+            if ((now - stateStartTime >= pedestrianDelay) && cars_are_stopped) {
+                stateStartTime = now;
+                current_state = STATE_WALKING_T1;
+            }
+            break;
 
-	        case STATE_BLINK_WAIT_T1:
-
-	            // Blink
-	            if (now - lastBlinkTime >= toggleFreq) {
-	                indicatorState ^= 1;
-	                lastBlinkTime = now;
-	            }
-
-	            light_set(ID_TL2_GREEN, COLOR_ON);
-	            light_set(ID_PL2_RED, COLOR_ON);
-	            light_set(ID_TL4_GREEN, COLOR_ON);
-
-	            if(indicatorState) light_set(ID_PL2_BLUE, COLOR_ON);
-
-	            // After pedestrianDelay STATE car orange
-	            if (now - stateStartTime >= pedestrianDelay) {
-	                stateStartTime = now;
-	                current_state = STATE_CAR_ORANGE_T1;
-	            }
-	            break;
-
-	        case STATE_CAR_ORANGE_T1:
-	        	//Should blink until ped light green, thus also when orange from green
-	        	if (now - lastBlinkTime >= toggleFreq) {
-	        		indicatorState ^= 1;
-	        		lastBlinkTime = now;
-	        	}
-	            light_set(ID_TL2_YELLOW, COLOR_ON);
-	            light_set(ID_PL2_RED, COLOR_ON);
-	            light_set(ID_TL4_YELLOW, COLOR_ON);
-
-	            if (indicatorState) {
-	            	light_set(ID_PL2_BLUE, COLOR_ON);
-	            }
-
-	            if (now - stateStartTime >= orangeDelay) {
-	                stateStartTime = now;
-	                current_state = STATE_PED_GREEN_T1;
-	            }
-	            break;
-
-	        case STATE_PED_GREEN_T1:
-	            light_set(ID_TL2_RED, COLOR_ON);
-	            light_set(ID_PL2_GREEN, COLOR_ON);
-	            light_set(ID_TL4_RED, COLOR_ON);
-
-	            if (now - stateStartTime >= walkingDelay) {
-	                current_state = STATE_PED_GREEN_END_T1;
-	            }
-	            break;
-
-	        case STATE_PED_GREEN_END_T1:
-	            light_set(ID_TL2_RED, COLOR_ON);
-	            light_set(ID_PL2_RED, COLOR_ON);
-	            light_set(ID_TL4_RED, COLOR_ON);
-
-	            stateStartTime = now;
-	            current_state = STATE_RETURN_ORANGE_T1;
-	            break;
-
-	        case STATE_RETURN_ORANGE_T1:
-	            light_set(ID_TL2_YELLOW, COLOR_ON);
-	            light_set(ID_PL2_RED, COLOR_ON);
-	            light_set(ID_TL4_YELLOW, COLOR_ON);
-
-	            if (now - stateStartTime >= orangeDelay) {
-	                current_state = STATE_IDLE_T1;
-	            }
-	            break;
-	        }
-
-	        Output_Lights();
-	    }
+        case STATE_WALKING_T1:
+            light_set(ID_PL2_GREEN, COLOR_ON);
+            if (now - stateStartTime >= walkingDelay) {
+                current_state = STATE_IDLE_T1;
+            }
+            break;
+    }
 }
 
-// Implementation of Task 2
-void task2(){
-    // Initialization
-    current_state_T2 = STATE_VERTICAL_GREEN_T2;
-    stateStartTime_T2 = HAL_GetTick();
+void task2_logic(uint32_t now) {
+    bool vertical_active = Vertical_Car_Sensor_Active();
+    bool horizontal_active = Horizontal_Car_Sensor_Active();
+    bool ped_waiting = (current_state == STATE_WAITING_T1);
 
-    while (1)
-    {
-        uint32_t now = HAL_GetTick();
+    switch (current_state_T2) {
 
-        lights_reset();
+        case STATE_VERTICAL_GREEN_T2:
+            light_set(ID_TL2_GREEN, COLOR_ON); light_set(ID_TL4_GREEN, COLOR_ON);
+            light_set(ID_TL1_RED, COLOR_ON);   light_set(ID_TL3_RED, COLOR_ON);
 
-        Debounce_Button_Inputs();
-        Debounce_Switch_Inputs();
+            // If a Horizontal car or Pedestrian is waiting
+            if (horizontal_active || ped_waiting) {
+                if (redWaitStartTime_T2 == 0) redWaitStartTime_T2 = now;
 
-        // Read lane status
-        bool vertical_active = Vertical_Car_Sensor_Active();
-        bool horizontal_active = Horizontal_Car_Sensor_Active();
-
-        //Implementation of state machine for task 2
-        switch (current_state_T2)
-        {
-            // =========================================================
-            case STATE_VERTICAL_GREEN_T2:
-                light_set(ID_TL1_GREEN, COLOR_ON); light_set(ID_TL3_GREEN, COLOR_ON);
-                light_set(ID_TL2_RED, COLOR_ON); light_set(ID_TL4_RED, COLOR_ON);
-
-
-                if (horizontal_active && !vertical_active) {
+                // R 2.7: Immediate if vertical empty. R 2.6: Force if redDelayMax reached.
+                if (!vertical_active || (now - redWaitStartTime_T2 >= redDelayMax)) {
                     stateStartTime_T2 = now;
                     redWaitStartTime_T2 = 0;
                     current_state_T2 = STATE_VERTICAL_ORANGE_T2;
-                    break;
                 }
-
-                // Only if a car is waiting at the red light
-                if (horizontal_active) {
-                    if (redWaitStartTime_T2 == 0) {
-                        redWaitStartTime_T2 = now; // Start tracking wait time
-                    }
-
-                    if (now - redWaitStartTime_T2 >= redDelayMax) {
-                        stateStartTime_T2 = now;
-                        redWaitStartTime_T2 = 0;
-                        current_state_T2 = STATE_VERTICAL_ORANGE_T2;
-                    } else if (!vertical_active && (now - stateStartTime_T2 >= greenDelay)) {
-                        stateStartTime_T2 = now;
-                        redWaitStartTime_T2 = 0;
-                        current_state_T2 = STATE_VERTICAL_ORANGE_T2;
-                    }
-                } else {
-                    // If no car waiting at red reset the red wait timer.
-                    redWaitStartTime_T2 = 0;
-                }
-
-                if (!vertical_active && !horizontal_active && (now - stateStartTime_T2 >= greenDelay)) {
+            } else {
+                redWaitStartTime_T2 = 0;
+                // R 2.4: Empty cycle after greenDelay
+                if (!vertical_active && (now - stateStartTime_T2 >= greenDelay)) {
                     stateStartTime_T2 = now;
                     current_state_T2 = STATE_VERTICAL_ORANGE_T2;
                 }
+            }
+            break;
 
-                break;
+        case STATE_VERTICAL_ORANGE_T2:
+            light_set(ID_TL2_YELLOW, COLOR_ON); light_set(ID_TL4_YELLOW, COLOR_ON);
+            light_set(ID_TL1_RED, COLOR_ON);    light_set(ID_TL3_RED, COLOR_ON);
+            if (now - stateStartTime_T2 >= orangeDelay) {
+                stateStartTime_T2 = now;
+                current_state_T2 = STATE_HORIZONTAL_ORANGE_T2;
+            }
+            break;
 
-            case STATE_VERTICAL_ORANGE_T2:
-                light_set(ID_TL1_YELLOW, COLOR_ON); light_set(ID_TL3_YELLOW, COLOR_ON);
-                light_set(ID_TL2_RED, COLOR_ON); light_set(ID_TL4_RED, COLOR_ON);
+        case STATE_HORIZONTAL_ORANGE_T2:
+            light_set(ID_TL2_RED, COLOR_ON);    light_set(ID_TL4_RED, COLOR_ON);
+            light_set(ID_TL1_YELLOW, COLOR_ON); light_set(ID_TL3_YELLOW, COLOR_ON);
+            if (now - stateStartTime_T2 >= orangeDelay) {
+                stateStartTime_T2 = now;
+                current_state_T2 = STATE_HORIZONTAL_GREEN_T2;
+            }
+            break;
 
-                if (now - stateStartTime_T2 >= orangeDelay) {
-                    stateStartTime_T2 = now;
-                    current_state_T2 = STATE_HORIZONTAL_RED_YELLOW_T2;
-                }
-                break;
+        case STATE_HORIZONTAL_GREEN_T2:
+            light_set(ID_TL1_GREEN, COLOR_ON); light_set(ID_TL3_GREEN, COLOR_ON);
+            light_set(ID_TL2_RED, COLOR_ON);   light_set(ID_TL4_RED, COLOR_ON);
 
-            // =========================================================
-            case STATE_HORIZONTAL_RED_YELLOW_T2:
-                light_set(ID_TL1_RED, COLOR_ON); light_set(ID_TL3_RED, COLOR_ON);
-                light_set(ID_TL2_RED, COLOR_ON); light_set(ID_TL4_RED, COLOR_ON);
-                light_set(ID_TL2_YELLOW, COLOR_ON); light_set(ID_TL4_YELLOW, COLOR_ON);
+            // If a Vertical car is waiting at the red light
+            if (vertical_active) {
+                if (redWaitStartTime_T2 == 0) redWaitStartTime_T2 = now;
 
-                if (now - stateStartTime_T2 >= orangeDelay) {
-                    stateStartTime_T2 = now;
-                    current_state_T2 = STATE_HORIZONTAL_GREEN_T2;
-                }
-                break;
-            case STATE_HORIZONTAL_GREEN_T2:
-                light_set(ID_TL1_RED, COLOR_ON); light_set(ID_TL3_RED, COLOR_ON);
-                light_set(ID_TL2_GREEN, COLOR_ON); light_set(ID_TL4_GREEN, COLOR_ON);
-
-                if (vertical_active && !horizontal_active) {
+                // R2.7: Immediate change if Horizontal is empty
+                // R2.6: Force change if Vertical has waited longer than redDelayMax
+                if (!horizontal_active || (now - redWaitStartTime_T2 >= redDelayMax)) {
                     stateStartTime_T2 = now;
                     redWaitStartTime_T2 = 0;
-                    current_state_T2 = STATE_HORIZONTAL_ORANGE_T2;
-                    break;
+                    current_state_T2 = STATE_HORIZONTAL_ORANGE_FINISH_T2;
                 }
-
-                if (vertical_active) {
-                    if (redWaitStartTime_T2 == 0) {
-                        redWaitStartTime_T2 = now;
-                    }
-
-                    if (now - redWaitStartTime_T2 >= redDelayMax) {
-                        stateStartTime_T2 = now;
-                        redWaitStartTime_T2 = 0;
-                        current_state_T2 = STATE_HORIZONTAL_ORANGE_T2;
-
-                    } else if (!horizontal_active && (now - stateStartTime_T2 >= greenDelay)) {
-                        stateStartTime_T2 = now;
-                        redWaitStartTime_T2 = 0;
-                        current_state_T2 = STATE_HORIZONTAL_ORANGE_T2;
-                    }
-                } else {
-                    redWaitStartTime_T2 = 0;
-                }
-
-                if (!vertical_active && !horizontal_active && (now - stateStartTime_T2 >= greenDelay)) {
+            } else {
+                redWaitStartTime_T2 = 0;
+                // R2.4: Return to Vertical if Horizontal is empty and greenDelay passed
+                // Also return if a pedestrian is waiting (ped_waiting should force return to vertical)
+                if ((!horizontal_active && (now - stateStartTime_T2 >= greenDelay)) || ped_waiting) {
                     stateStartTime_T2 = now;
-                    current_state_T2 = STATE_HORIZONTAL_ORANGE_T2;
+                    current_state_T2 = STATE_HORIZONTAL_ORANGE_FINISH_T2;
                 }
+            }
+            break;
 
-                break;
+        case STATE_HORIZONTAL_ORANGE_FINISH_T2:
+            light_set(ID_TL1_YELLOW, COLOR_ON); light_set(ID_TL3_YELLOW, COLOR_ON);
+            light_set(ID_TL2_RED, COLOR_ON);    light_set(ID_TL4_RED, COLOR_ON);
+            if (now - stateStartTime_T2 >= orangeDelay) {
+                stateStartTime_T2 = now;
+                current_state_T2 = STATE_VERTICAL_ORANGE_PREPARE_T2;
+            }
+            break;
 
-            case STATE_HORIZONTAL_ORANGE_T2:
-                light_set(ID_TL1_RED, COLOR_ON); light_set(ID_TL3_RED, COLOR_ON);
-                light_set(ID_TL2_YELLOW, COLOR_ON); light_set(ID_TL4_YELLOW, COLOR_ON);
-
-                if (now - stateStartTime_T2 >= orangeDelay) {
-                    stateStartTime_T2 = now;
-                    current_state_T2 = STATE_VERTICAL_RED_YELLOW_T2;
-                }
-                break;
-
-            // =========================================================
-            case STATE_VERTICAL_RED_YELLOW_T2:
-                light_set(ID_TL1_RED, COLOR_ON); light_set(ID_TL3_RED, COLOR_ON);
-                light_set(ID_TL2_RED, COLOR_ON); light_set(ID_TL4_RED, COLOR_ON);
-                light_set(ID_TL1_YELLOW, COLOR_ON); light_set(ID_TL3_YELLOW, COLOR_ON);
-
-                if (now - stateStartTime_T2 >= orangeDelay) {
-                    stateStartTime_T2 = now;
-                    current_state_T2 = STATE_VERTICAL_GREEN_T2;
-                }
-                break;
-        }
-
-        Output_Lights();
+        case STATE_VERTICAL_ORANGE_PREPARE_T2:
+            light_set(ID_TL1_RED, COLOR_ON);    light_set(ID_TL3_RED, COLOR_ON);
+            light_set(ID_TL2_YELLOW, COLOR_ON); light_set(ID_TL4_YELLOW, COLOR_ON);
+            if (now - stateStartTime_T2 >= orangeDelay) {
+                stateStartTime_T2 = now;
+                current_state_T2 = STATE_VERTICAL_GREEN_T2;
+            }
+            break;
     }
 }
 void traffic_control(){
-	//task1();
-	task2();
+	// Initializations
+	current_state = STATE_IDLE_T1;
+	current_state_T2 = STATE_VERTICAL_GREEN_T2;
+	uint32_t now = HAL_GetTick();
+	stateStartTime = now;
+	stateStartTime_T2 = now;
+
+	while (1) {
+		now = HAL_GetTick();
+		// Reset light and poll inputs
+		lights_reset();
+	    Debounce_Button_Inputs();
+	    Debounce_Switch_Inputs();
+
+	    // Run Task 2 Logic (Car light logic)
+	    task2_logic(now);
+
+	    // Run Task 1 Logic (PED light logic)
+	    task1_logic(now);
+
+	    Output_Lights();
+	}
 }
 

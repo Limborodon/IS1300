@@ -186,11 +186,11 @@ bool Car_Present(uint8_t car_number){
 }
 
 bool Vertical_Car_Sensor_Active(void) {
-    return (Car_Present(1) || Car_Present(3));
+    return (Car_Present(2) || Car_Present(4));
 }
 
 bool Horizontal_Car_Sensor_Active(void) {
-    return (Car_Present(2) || Car_Present(4));
+    return (Car_Present(1) || Car_Present(3));
 }
 
 void light_set(uint8_t led_id, uint8_t color_code) {

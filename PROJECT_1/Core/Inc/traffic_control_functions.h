@@ -54,6 +54,7 @@ extern GPIO_PinState PL2_Debounced_State;
 
 void Output_Lights();
 void Debounce_Button_Inputs();
+void Debounce_Switch_Inputs();
 void light_set(uint8_t led_id, uint8_t color_code);
 void lights_reset();
 bool Car_Present(uint8_t car_number);
