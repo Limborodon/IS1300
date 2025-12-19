@@ -1503,7 +1503,7 @@ void task2_logic(uint32_t now) {
  8000afe:	687b      	ldr	r3, [r7, #4]
  8000b00:	6013      	str	r3, [r2, #0]
 
-                // R 2.7: Immediate if vertical empty. R 2.6: Force if redDelayMax reached.
+
                 if (!vertical_active || (now - redWaitStartTime_T2 >= redDelayMax)) {
  8000b02:	7bfb      	ldrb	r3, [r7, #15]
  8000b04:	f083 0301 	eor.w	r3, r3, #1
@@ -1538,7 +1538,7 @@ void task2_logic(uint32_t now) {
  8000b32:	4b7d      	ldr	r3, [pc, #500]	@ (8000d28 <task2_logic+0x2b0>)
  8000b34:	2200      	movs	r2, #0
  8000b36:	601a      	str	r2, [r3, #0]
-                // R 2.4: Empty cycle after greenDelay
+
                 if (!vertical_active && (now - stateStartTime_T2 >= greenDelay)) {
  8000b38:	7bfb      	ldrb	r3, [r7, #15]
  8000b3a:	f083 0301 	eor.w	r3, r3, #1
@@ -1672,8 +1672,6 @@ void task2_logic(uint32_t now) {
  8000c1a:	687b      	ldr	r3, [r7, #4]
  8000c1c:	6013      	str	r3, [r2, #0]
 
-                // R2.7: Immediate change if Horizontal is empty
-                // R2.6: Force change if Vertical has waited longer than redDelayMax
                 if (!horizontal_active || (now - redWaitStartTime_T2 >= redDelayMax)) {
  8000c1e:	7bbb      	ldrb	r3, [r7, #14]
  8000c20:	f083 0301 	eor.w	r3, r3, #1

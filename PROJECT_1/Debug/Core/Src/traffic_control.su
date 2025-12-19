@@ -1,3 +1,3 @@
 ../Core/Src/traffic_control.c:67:6:task1_logic	24	static
 ../Core/Src/traffic_control.c:110:6:task2_logic	24	static
-../Core/Src/traffic_control.c:209:6:traffic_control	16	static
+../Core/Src/traffic_control.c:206:6:traffic_control	16	static
