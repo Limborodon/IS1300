@@ -122,7 +122,7 @@ void task2_logic(uint32_t now) {
             if (horizontal_active || ped_waiting) {
                 if (redWaitStartTime_T2 == 0) redWaitStartTime_T2 = now;
 
-                // R 2.7: Immediate if vertical empty. R 2.6: Force if redDelayMax reached.
+
                 if (!vertical_active || (now - redWaitStartTime_T2 >= redDelayMax)) {
                     stateStartTime_T2 = now;
                     redWaitStartTime_T2 = 0;
@@ -130,7 +130,7 @@ void task2_logic(uint32_t now) {
                 }
             } else {
                 redWaitStartTime_T2 = 0;
-                // R 2.4: Empty cycle after greenDelay
+
                 if (!vertical_active && (now - stateStartTime_T2 >= greenDelay)) {
                     stateStartTime_T2 = now;
                     current_state_T2 = STATE_VERTICAL_ORANGE_T2;
@@ -164,8 +164,6 @@ void task2_logic(uint32_t now) {
             if (vertical_active) {
                 if (redWaitStartTime_T2 == 0) redWaitStartTime_T2 = now;
 
-                // R2.7: Immediate change if Horizontal is empty
-                // R2.6: Force change if Vertical has waited longer than redDelayMax
                 if (!horizontal_active || (now - redWaitStartTime_T2 >= redDelayMax)) {
                     stateStartTime_T2 = now;
                     redWaitStartTime_T2 = 0;
@@ -173,8 +171,7 @@ void task2_logic(uint32_t now) {
                 }
             } else {
                 redWaitStartTime_T2 = 0;
-                // R2.4: Return to Vertical if Horizontal is empty and greenDelay passed
-                // Also return if a pedestrian is waiting (ped_waiting should force return to vertical)
+                //Return to Vertical if Horizontal is empty and greenDelay passed
                 if ((!horizontal_active && (now - stateStartTime_T2 >= greenDelay)) || ped_waiting) {
                     stateStartTime_T2 = now;
                     current_state_T2 = STATE_HORIZONTAL_ORANGE_FINISH_T2;
