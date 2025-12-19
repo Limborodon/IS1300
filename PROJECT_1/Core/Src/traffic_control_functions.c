@@ -228,7 +228,7 @@ bool Horizontal_Car_Sensor_Active(void) {
 
 /**
  * @brief  Sets a specific LED on or off in the virtual state bytes.
- * @param  led_id The ID of the light (e.g., ID_TL1_RED).
+ * @param  led_id The ID of the light.
  * @param  color_code Either COLOR_ON or COLOR_OFF.
  */
 void light_set(uint8_t led_id, uint8_t color_code) {

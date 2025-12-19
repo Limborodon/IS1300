@@ -27,9 +27,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00005028  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000abbf  00000000  00000000  00005058  2**0
+ 12 .debug_info   0000abc0  00000000  00000000  00005058  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00001b7d  00000000  00000000  0000fc17  2**0
+ 13 .debug_abbrev 00001b7d  00000000  00000000  0000fc18  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  14 .debug_aranges 00000948  00000000  00000000  00011798  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  000255a0  00000000  00000000  000127f5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000b850  00000000  00000000  00037d95  2**0
+ 17 .debug_line   0000b851  00000000  00000000  00037d95  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e61a4  00000000  00000000  000435e5  2**0
+ 18 .debug_str    000e61a4  00000000  00000000  000435e6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  00129789  2**0
+ 19 .comment      00000043  00000000  00000000  0012978a  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000248c  00000000  00000000  001297cc  2**2
+ 20 .debug_frame  0000248c  00000000  00000000  001297d0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000005f  00000000  00000000  0012bc58  2**0
+ 21 .debug_line_str 0000005f  00000000  00000000  0012bc5c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1259,11 +1259,11 @@ void SystemInit(void)
  8000958:	e000ed00 	.word	0xe000ed00
 
 0800095c <task1_logic>:
-uint32_t walkingDelay    = 5000;
-uint32_t orangeDelay     = 2000;
-uint32_t greenDelay      = 5000;
-uint32_t redDelayMax     = 6000;
 
+/**
+ * @brief  Logic for Pedestrian Crossing.
+ * @param  now Current system time in milliseconds.
+ */
 void task1_logic(uint32_t now) {
  800095c:	b580      	push	{r7, lr}
  800095e:	b084      	sub	sp, #16
@@ -1429,6 +1429,10 @@ void task1_logic(uint32_t now) {
 
 08000a78 <task2_logic>:
 
+/**
+ * @brief  Logic for Vehicle Intersection .
+ * @param  now Current system time in milliseconds.
+ */
 void task2_logic(uint32_t now) {
  8000a78:	b580      	push	{r7, lr}
  8000a7a:	b084      	sub	sp, #16
@@ -1839,6 +1843,11 @@ void task2_logic(uint32_t now) {
  8000d38:	20000010 	.word	0x20000010
 
 08000d3c <traffic_control>:
+
+/**
+ * @brief  Main entry point for traffic control.
+ * @details Initializes the state machines and runs the Statemachine logic and Outputs lights
+ */
 void traffic_control(){
  8000d3c:	b580      	push	{r7, lr}
  8000d3e:	b082      	sub	sp, #8
@@ -1876,12 +1885,12 @@ void traffic_control(){
 	    Debounce_Switch_Inputs();
  8000d6e:	f000 f8bf 	bl	8000ef0 <Debounce_Switch_Inputs>
 
-	    // Run Task 2 Logic (Car light logic)
+	    // Run Task 2 Logic
 	    task2_logic(now);
  8000d72:	6878      	ldr	r0, [r7, #4]
  8000d74:	f7ff fe80 	bl	8000a78 <task2_logic>
 
-	    // Run Task 1 Logic (PED light logic)
+	    // Run Task 1 Logic
 	    task1_logic(now);
  8000d78:	6878      	ldr	r0, [r7, #4]
  8000d7a:	f7ff fdef 	bl	800095c <task1_logic>
@@ -1898,9 +1907,9 @@ void traffic_control(){
  8000d94:	200000dc 	.word	0x200000dc
 
 08000d98 <Shift_Out_24>:
-@brief Shift_Out_24, Shifts out 24 bits to the shift registers for pedestrian and traffic lights.
-@author Linus Wennergren
-@date 8-December-2025
+* @param  byte_U3 High byte for U3
+* @param  byte_U2 Mid byte for U2
+* @param  byte_U1 Low byte for U1
 ******************************************************************************
 */
 void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
@@ -1995,6 +2004,9 @@ void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
 
 08000e38 <Output_Lights>:
 
+/**
+ * @brief  Updates hardware lights by shifting out the current global states.
+ */
 void Output_Lights(){
  8000e38:	b580      	push	{r7, lr}
  8000e3a:	af00      	add	r7, sp, #0
@@ -2018,9 +2030,10 @@ void Output_Lights(){
  8000e60:	20000100 	.word	0x20000100
 
 08000e64 <Debounce_Button_Inputs>:
-// Debounces Button inputs with a 5ms debounce delay. Not 100% necessary because we only care about the first button press.
-// The solution is good for rejecting electrical noise in a larger syste and does not impact it much.
-
+/**
+ * @brief  Debounces Pedestrian Button inputs.
+ * @details Checks for state changes and applies DEBOUNCE_DELAY.
+ */
 void Debounce_Button_Inputs() {
  8000e64:	b580      	push	{r7, lr}
  8000e66:	b082      	sub	sp, #8
@@ -2106,6 +2119,9 @@ void Debounce_Button_Inputs() {
 
 08000ef0 <Debounce_Switch_Inputs>:
 
+/**
+ * @brief  Debounces car sensor switch inputs for all 4 lanes.
+ */
 void Debounce_Switch_Inputs(){
  8000ef0:	b580      	push	{r7, lr}
  8000ef2:	b082      	sub	sp, #8
@@ -2259,6 +2275,7 @@ void Debounce_Switch_Inputs(){
 
 08000ff4 <Upper_Pedestrian_Button_Pressed>:
 
+/** @brief Checks if the Upper Pedestrian button is currently pressed. */
 bool Upper_Pedestrian_Button_Pressed(void) {
  8000ff4:	b480      	push	{r7}
  8000ff6:	af00      	add	r7, sp, #0
@@ -2278,11 +2295,11 @@ bool Upper_Pedestrian_Button_Pressed(void) {
  8001010:	2000001d 	.word	0x2000001d
 
 08001014 <Car_Present>:
-
-bool Lower_Pedestrian_Button_Pressed(void) {
-    return (PL1_Debounced_State == BUTTON_PRESSED);
-}
-
+/**
+ * @brief  Check for car presence on a specific lane.
+ * @param  car_number The ID of the lane (1-4).
+ * @return true if car is present, false otherwise.
+ */
 bool Car_Present(uint8_t car_number){
  8001014:	b480      	push	{r7}
  8001016:	b083      	sub	sp, #12
@@ -2358,7 +2375,7 @@ bool Car_Present(uint8_t car_number){
  8001098:	200000e7 	.word	0x200000e7
 
 0800109c <Vertical_Car_Sensor_Active>:
-
+/** @brief Returns true if a car is detected in the vertical lane. */
 bool Vertical_Car_Sensor_Active(void) {
  800109c:	b580      	push	{r7, lr}
  800109e:	af00      	add	r7, sp, #0
@@ -2384,6 +2401,7 @@ bool Vertical_Car_Sensor_Active(void) {
 
 080010c8 <Horizontal_Car_Sensor_Active>:
 
+/** @brief Returns true if a car is detected in the horizontal lane */
 bool Horizontal_Car_Sensor_Active(void) {
  80010c8:	b580      	push	{r7, lr}
  80010ca:	af00      	add	r7, sp, #0
@@ -2408,7 +2426,11 @@ bool Horizontal_Car_Sensor_Active(void) {
  80010f2:	bd80      	pop	{r7, pc}
 
 080010f4 <light_set>:
-
+/**
+ * @brief  Sets a specific LED on or off in the virtual state bytes.
+ * @param  led_id The ID of the light.
+ * @param  color_code Either COLOR_ON or COLOR_OFF.
+ */
 void light_set(uint8_t led_id, uint8_t color_code) {
  80010f4:	b480      	push	{r7}
  80010f6:	b085      	sub	sp, #20
@@ -2622,6 +2644,9 @@ void light_set(uint8_t led_id, uint8_t color_code) {
 
 08001270 <lights_reset>:
 
+/**
+ * @brief Resets all light states to 0 (lights off).
+ */
 void lights_reset(){
  8001270:	b480      	push	{r7}
  8001272:	af00      	add	r7, sp, #0

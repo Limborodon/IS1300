@@ -1,6 +1,6 @@
 ../Core/Src/test.c:20:6:test_shift_register	24	static
-../Core/Src/test.c:50:6:test_lights	16	static
-../Core/Src/test.c:65:6:test_lights_reset	16	static
-../Core/Src/test.c:76:6:test_buttons	24	static
-../Core/Src/test.c:103:6:test_switches	8	static
-../Core/Src/test.c:116:6:test_program	4	static
+../Core/Src/test.c:54:6:test_lights	16	static
+../Core/Src/test.c:72:6:test_lights_reset	16	static
+../Core/Src/test.c:86:6:test_buttons	24	static
+../Core/Src/test.c:116:6:test_switches	8	static
+../Core/Src/test.c:132:6:test_program	4	static
