@@ -2,34 +2,42 @@
 ******************************************************************************
 @brief traffic_control_functions, file for project_functions.c file.
 @file traffic_control_functions.c
-@author Linus Wennergren
-@date 8-December-2025
+@author Linus Wennergren, George Yandem
+@date 19-December-2025
 ******************************************************************************
 */
 
 #include "main.h"
 #include "traffic_control_functions.h"
 
-
+/** @brief Debounce delay in milliseconds */
 #define DEBOUNCE_DELAY (5) // ms
 
-//U1
+/** @name U1 Bit Masks
+ * Bit positions for shift register
+ * @{ */
 #define TL1_RED        (1 << 0)
 #define TL1_YELLOW     (1 << 1)
 #define TL1_GREEN      (1 << 2)
 #define PL1_RED        (1 << 3)
 #define PL1_GREEN      (1 << 4)
 #define PL1_BLUE       (1 << 5)
+/** @} */
 
-// U2
+/** @name U2 Bit Masks
+ * Bit positions for shift register
+ * @{ */
 #define TL2_RED        (1 << 0)
 #define TL2_YELLOW     (1 << 1)
 #define TL2_GREEN      (1 << 2)
 #define PL2_RED        (1 << 3)
 #define PL2_GREEN      (1 << 4)
 #define PL2_BLUE       (1 << 5)
+/** @} */
 
-// U3
+/** @name U3 Bit Masks
+ * Bit positions for shift register
+ * @{ */
 #define TL3_RED        (1 << 0)
 #define TL3_YELLOW     (1 << 1)
 #define TL3_GREEN      (1 << 2)
@@ -37,20 +45,27 @@
 #define TL4_RED        (1 << 3)
 #define TL4_YELLOW     (1 << 4)
 #define TL4_GREEN      (1 << 5)
+/** @} */
 
 
 
 
-
-// Global PED button/switch state variables
+/** @brief Debounced state of Pedestrian Button 1. */
 GPIO_PinState PL1_Debounced_State = BUTTON_RELEASED;
+
+/** @brief Debounced state of Pedestrian Button 2. */
 GPIO_PinState PL2_Debounced_State = BUTTON_RELEASED;
 
+/** @name Car Sensor Debounced States
+ * @{ */
 GPIO_PinState TL1_Switch_Debounced_State = NO_CAR_PRESET;
 GPIO_PinState TL2_Switch_Debounced_State = NO_CAR_PRESET;
 GPIO_PinState TL3_Switch_Debounced_State = NO_CAR_PRESET;
 GPIO_PinState TL4_Switch_Debounced_State = NO_CAR_PRESET;
+/** @} */
 
+/** @name Last Change timestamps
+ * @{ */
 uint32_t PL1_Last_Change_Time = 0;
 uint32_t PL2_Last_Change_Time = 0;
 
@@ -58,18 +73,21 @@ uint32_t TL1_Last_Change_Time = 0;
 uint32_t TL2_Last_Change_Time = 0;
 uint32_t TL3_Last_Change_Time = 0;
 uint32_t TL4_Last_Change_Time = 0;
+/** @} */
 
-// Global state variables for the lights/shift register
-// Volatile in case we use want to use RTOS
+/** @brief Byte representation of lights on shift register U1. */
 volatile uint8_t current_U1_state;
+/** @brief Byte representation of lights on shift register U2. */
 volatile uint8_t current_U2_state;
+/** @brief Byte representation of lights on shift register U3. */
 volatile uint8_t current_U3_state;
 
 /**
 ******************************************************************************
-@brief Shift_Out_24, Shifts out 24 bits to the shift registers for pedestrian and traffic lights.
-@author Linus Wennergren
-@date 8-December-2025
+* @brief  Shifts out 24 bits to the shift registers used for the LEDs and outputs them.
+* @param  byte_U3 High byte for U3
+* @param  byte_U2 Mid byte for U2
+* @param  byte_U1 Low byte for U1
 ******************************************************************************
 */
 void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
@@ -96,12 +114,16 @@ void Shift_Out_24(uint8_t byte_U3, uint8_t byte_U2, uint8_t byte_U1) {
     HAL_GPIO_WritePin(STCP_GPIO_Port, STCP_Pin, GPIO_PIN_SET);
 }
 
+/**
+ * @brief  Updates hardware lights by shifting out the current global states.
+ */
 void Output_Lights(){
 	Shift_Out_24(current_U3_state,current_U2_state,current_U1_state);
 }
-// Debounces Button inputs with a 5ms debounce delay. Not 100% necessary because we only care about the first button press.
-// The solution is good for rejecting electrical noise in a larger syste and does not impact it much.
-
+/**
+ * @brief  Debounces Pedestrian Button inputs.
+ * @details Checks for state changes and applies DEBOUNCE_DELAY.
+ */
 void Debounce_Button_Inputs() {
     uint32_t current_time = HAL_GetTick();
     GPIO_PinState PL1_reading = HAL_GPIO_ReadPin(PL1_Switch_GPIO_Port, PL1_Switch_Pin);
@@ -123,6 +145,9 @@ void Debounce_Button_Inputs() {
         }
 }
 
+/**
+ * @brief  Debounces car sensor switch inputs for all 4 lanes.
+ */
 void Debounce_Switch_Inputs(){
 	uint32_t current_time = HAL_GetTick();
 	GPIO_PinState TL1_reading = HAL_GPIO_ReadPin(TL1_Car_GPIO_Port, TL1_Car_Pin);
@@ -161,14 +186,21 @@ void Debounce_Switch_Inputs(){
 
 }
 
+/** @brief Checks if the Upper Pedestrian button is currently pressed. */
 bool Upper_Pedestrian_Button_Pressed(void) {
     return (PL2_Debounced_State == BUTTON_PRESSED);
 }
 
+/** @brief Checks if the Lower Pedestrian button is currently pressed. */
 bool Lower_Pedestrian_Button_Pressed(void) {
     return (PL1_Debounced_State == BUTTON_PRESSED);
 }
 
+/**
+ * @brief  Generic check for car presence on a specific lane.
+ * @param  car_number The ID of the lane (1-4).
+ * @return true if car is present, false otherwise.
+ */
 bool Car_Present(uint8_t car_number){
 	switch(car_number){
 	case 1:
@@ -184,15 +216,21 @@ bool Car_Present(uint8_t car_number){
 	}
 
 }
-
+/** @brief Returns true if a car is detected in the vertical lane. */
 bool Vertical_Car_Sensor_Active(void) {
     return (Car_Present(2) || Car_Present(4));
 }
 
+/** @brief Returns true if a car is detected in the horizontal lane */
 bool Horizontal_Car_Sensor_Active(void) {
     return (Car_Present(1) || Car_Present(3));
 }
 
+/**
+ * @brief  Sets a specific LED on or off in the virtual state bytes.
+ * @param  led_id The ID of the light (e.g., ID_TL1_RED).
+ * @param  color_code Either COLOR_ON or COLOR_OFF.
+ */
 void light_set(uint8_t led_id, uint8_t color_code) {
     uint8_t bitmask = 0;
     volatile uint8_t *state_ptr = NULL; // Pointer to U1, U2, or U3 state used for updating without loss of information. volatile for safety.
@@ -237,6 +275,9 @@ void light_set(uint8_t led_id, uint8_t color_code) {
     }
 }
 
+/**
+ * @brief Resets all light states to 0 (lights off).
+ */
 void lights_reset(){
 	current_U1_state = 0;
 	current_U2_state = 0;

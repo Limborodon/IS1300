@@ -9,7 +9,10 @@
 
 #ifndef INC_TEST_H_
 #define INC_TEST_H_
-
+/**
+ * @brief  The test entry point.
+ * @details This function acts as a wrapper for the tests.
+ */
 void test_program();
 
 #endif /* INC_TEST_H_ */

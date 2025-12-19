@@ -2,52 +2,68 @@
 ******************************************************************************
 @brief file for the implementation tasks
 @file traffic_control.c
-@author Linus Wennergren
-@date 8-December-2025
+@author Linus Wennergren, George Yandem
+@date 19-December-2025
 ******************************************************************************
 */
 #include<main.h>
 
 #include "traffic_control_functions.h"
-
-// State machine for Task 1
+/**
+ * @brief States for the Pedestrian Traffic Light.
+ */
 typedef enum {
-    STATE_IDLE_T1,
-    STATE_WAITING_T1,
-    STATE_WALKING_T1
+    STATE_IDLE_T1, /**< PED light Red, waiting for button press. */
+    STATE_WAITING_T1, /**< Button pressed, Blue light blinking, waiting for car red light. */
+    STATE_WALKING_T1 /**< PED light is Green, it is safe to cross. */
 } TrafficState_t_T1;
 
+/** @brief Current state of the PED Traffic Light */
 TrafficState_t_T1 current_state = STATE_IDLE_T1;
 
-// State machine for Task 2
+/**
+ * @brief States for the Car Traffic Lights.
+ */
 typedef enum {
-    STATE_VERTICAL_GREEN_T2,
-    STATE_VERTICAL_ORANGE_T2,
-    STATE_HORIZONTAL_GREEN_T2,
-    STATE_HORIZONTAL_ORANGE_T2,
-	STATE_VERTICAL_ORANGE_PREPARE_T2,
-	STATE_HORIZONTAL_ORANGE_FINISH_T2
+    STATE_VERTICAL_GREEN_T2, /**< Vert. lane is Green, Hori. lane is Red. */
+    STATE_VERTICAL_ORANGE_T2, /**< Vert. switching from Green to Red. */
+    STATE_HORIZONTAL_GREEN_T2, /**< Hori. lane is Green, Vert. is Red. */
+    STATE_HORIZONTAL_ORANGE_T2, /**< Hori. switching Red to Green . */
+	STATE_VERTICAL_ORANGE_PREPARE_T2, /**< Vert. switching Red to Green. */
+	STATE_HORIZONTAL_ORANGE_FINISH_T2 /**< Hori. switching Green to Red. */
 
 } TrafficState_t_T2;
 
+/** @brief Current state of the vehicle intersection */
 TrafficState_t_T2 current_state_T2 = STATE_VERTICAL_GREEN_T2;
 
+
+/** @name Timing and States
+ * Variables used for time-tracking and hardware state.
+ * @{ */
 uint32_t stateStartTime = 0;
 uint32_t lastBlinkTime  = 0;
 uint8_t indicatorState  = 0;
 
 uint32_t stateStartTime_T2 = 0;
 uint32_t redWaitStartTime_T2 = 0;
+/** @} */
 
-
-// Timing variables
+/** @name Configuration Constants for tasks
+ * Timing delays defined in milliseconds.
+ * @{ */
 uint32_t toggleFreq      = 300;
 uint32_t pedestrianDelay = 4000;
 uint32_t walkingDelay    = 5000;
 uint32_t orangeDelay     = 2000;
 uint32_t greenDelay      = 5000;
 uint32_t redDelayMax     = 6000;
+/** @} */
 
+/**
+ * @brief  Logic for Pedestrian Crossing.
+ * @param  now Current system time in milliseconds.
+ */
 void task1_logic(uint32_t now) {
     switch (current_state) {
         case STATE_IDLE_T1:
@@ -87,6 +103,10 @@ void task1_logic(uint32_t now) {
     }
 }
 
+/**
+ * @brief  Logic for Vehicle Intersection .
+ * @param  now Current system time in milliseconds.
+ */
 void task2_logic(uint32_t now) {
     bool vertical_active = Vertical_Car_Sensor_Active();
     bool horizontal_active = Horizontal_Car_Sensor_Active();
@@ -181,6 +201,11 @@ void task2_logic(uint32_t now) {
             break;
     }
 }
+
+/**
+ * @brief  Main entry point for traffic control.
+ * @details Initializes the state machines and runs the Statemachine logic and Outputs lights
+ */
 void traffic_control(){
 	// Initializations
 	current_state = STATE_IDLE_T1;
@@ -196,10 +221,10 @@ void traffic_control(){
 	    Debounce_Button_Inputs();
 	    Debounce_Switch_Inputs();
 
-	    // Run Task 2 Logic (Car light logic)
+	    // Run Task 2 Logic
 	    task2_logic(now);
 
-	    // Run Task 1 Logic (PED light logic)
+	    // Run Task 1 Logic
 	    task1_logic(now);
 
 	    Output_Lights();
