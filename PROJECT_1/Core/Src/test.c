@@ -2,8 +2,8 @@
 ******************************************************************************
 @brief file for program tests
 @file test.c
-@author Linus Wennergren
-@date 8-December-2025
+@author Linus Wennergren, George Yandem
+@date 19-December-2025
 ******************************************************************************
 */
 #include "main.h"
@@ -11,12 +11,12 @@
 
 /**
 ******************************************************************************
-@brief Tests all the leds using the shift_out_24() function.
-@author Linus Wennergren
-@date 9-December-2025
+* @brief  Tests all the LEDs using shift register bits
+* @details Iterates through U3, U2, and U1 shift registers shifting a high
+* bit through Q0-Q5.
+* @note  Each light stays on for 5 seconds.
 ******************************************************************************
 */
-
 void test_shift_register()
 {
 	//U3: skip Q6, Q7 10000001
@@ -45,8 +45,12 @@ void test_shift_register()
 
 }
 
-// lights assigned to 1-18 and tested with HAL_Delay individually turning all of them on induvidually then off with 2 seconds per light switch.
-//Check with visual confirmation
+/**
+ * @brief  Tests all 18 LED IDs using the light_set function.
+ * @details Turns on each ID (1-18) one by one with a 2-second delay,
+ * then turns them all off one by one.
+ * @note   Requires visual confirmation.
+ */
 void test_lights(){
 	// turns all lights on 1 by 1 every 2 seconds
 	for(int i = 1; i <= 18; i++){
@@ -61,7 +65,10 @@ void test_lights(){
 	}
 
 }
-// turns on all lights then waits 5 seconds and turns them off with lights_reset().
+/**
+ * @brief  Verifies software reset functionality for all lights.
+ * @details Turns all LEDs on, waits 5 seconds, and then calls lights_reset().
+ */
 void test_lights_reset(){
 	for(int i = 1; i <= 18; i++){
 		light_set(i,COLOR_ON);
@@ -72,7 +79,10 @@ void test_lights_reset(){
 	Output_Lights();
 
 }
-
+/**
+ * @brief  Interactive test for pedestrian button debouncing and logic.
+ * @details When a button is pressed, the respective Blue LED turns on for 5 seconds.
+ */
 void test_buttons(){
 	uint32_t lit_time = 5000; // 5000 ms
 	uint32_t PL1_last_change_time = 0;
@@ -99,7 +109,10 @@ void test_buttons(){
 
 }
 
-//tests switches by turning on their respective traffic lights green light if switch state is high and turns off if switch state low.
+/**
+ * @brief  Interactive test for car sensor switch inputs.
+ * @details Maps car states directly to the respective Traffic Light's Green LED.
+ */
 void test_switches(){
 	Debounce_Switch_Inputs();
 	while(1){
@@ -112,7 +125,10 @@ void test_switches(){
 	}
 
 }
-
+/**
+ * @brief  Master test function.
+ * @details Uncomment the specific test routine desired.
+ */
 void test_program(){
 	//test_shift_register();
 	//test_lights();

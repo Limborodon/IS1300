@@ -56,7 +56,7 @@ GPIO_PinState PL1_Debounced_State = BUTTON_RELEASED;
 /** @brief Debounced state of Pedestrian Button 2. */
 GPIO_PinState PL2_Debounced_State = BUTTON_RELEASED;
 
-/** @name Car Sensor Debounced States
+/** @name Car Debounced States
  * @{ */
 GPIO_PinState TL1_Switch_Debounced_State = NO_CAR_PRESET;
 GPIO_PinState TL2_Switch_Debounced_State = NO_CAR_PRESET;
@@ -64,7 +64,7 @@ GPIO_PinState TL3_Switch_Debounced_State = NO_CAR_PRESET;
 GPIO_PinState TL4_Switch_Debounced_State = NO_CAR_PRESET;
 /** @} */
 
-/** @name Last Change timestamps
+/** @name Last Change Timestamps
  * @{ */
 uint32_t PL1_Last_Change_Time = 0;
 uint32_t PL2_Last_Change_Time = 0;
@@ -75,11 +75,11 @@ uint32_t TL3_Last_Change_Time = 0;
 uint32_t TL4_Last_Change_Time = 0;
 /** @} */
 
-/** @brief Byte representation of lights on shift register U1. */
+/** @brief Byte representation of lights on shift register U1 */
 volatile uint8_t current_U1_state;
-/** @brief Byte representation of lights on shift register U2. */
+/** @brief Byte representation of lights on shift register U2 */
 volatile uint8_t current_U2_state;
-/** @brief Byte representation of lights on shift register U3. */
+/** @brief Byte representation of lights on shift register U3 */
 volatile uint8_t current_U3_state;
 
 /**
@@ -197,7 +197,7 @@ bool Lower_Pedestrian_Button_Pressed(void) {
 }
 
 /**
- * @brief  Generic check for car presence on a specific lane.
+ * @brief  Check for car presence on a specific lane.
  * @param  car_number The ID of the lane (1-4).
  * @return true if car is present, false otherwise.
  */
