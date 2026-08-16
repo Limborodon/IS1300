@@ -36,9 +36,8 @@ A dual-task, non-blocking traffic management system implemented on an **STM32 NU
 ## Getting Started
 
 ### Prerequisites
-* **IDE:** STM32CubeIDE, Keil uVision, or IAR Embedded Workbench.
+* **IDE:** STM32CubeIDE
 * **Compiler:** `arm-none-eabi-gcc`
-* **Hardware Tooling:** ST-LINK/V2 (integrated on the Nucleo board)
 
 ### Building and Flashing
 1. Clone or download this repository into your STM32CubeIDE workspace.
